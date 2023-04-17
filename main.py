@@ -19,12 +19,56 @@ login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
-def get_size(fname, a):
+def get_size(fname, a):  # приводит изображение к заданному размеру
     im = Image.open(fname)
     width, height = im.size
     k = width / height
     new_im = im.resize((a, int(a / k)))
     new_im.save(fname)
+
+
+def get_map(adress, id):  # получает адрес и сохраняет картинку с расположением магазина
+    link = 'https://geocode-maps.yandex.ru/1.x'
+    data = {'geocode': adress.replace(' ', '+'),
+            'apikey': '40d1649f-0493-4b70-98ba-98533de7710b',
+            'format': 'json'}
+    coords = ','.join(
+        requests.get(link, params=data).json()['response']['GeoObjectCollection']['featureMember'][0]['GeoObject'][
+            'Point']['pos'].split())
+
+    search_api_server = "https://search-maps.yandex.ru/v1/"
+    search_params = {
+        "apikey": 'dda3ddba-c9ea-4ead-9010-f43fbc15c6e3',
+        "text": "музыкальный магазин",
+        "lang": "ru_RU",
+        "ll": coords,
+        "type": "biz"}
+
+    response = requests.get(search_api_server, params=search_params).json()
+
+    organization = response["features"][0]
+    org_name = organization["properties"]["CompanyMetaData"]["name"]
+    org_address = organization["properties"]["CompanyMetaData"]["address"]
+
+    point = organization["geometry"]["coordinates"]
+    org_point = "{0},{1}".format(point[0], point[1])
+    delta = "0.02"
+
+    # Собираем параметры для запроса к StaticMapsAPI:
+    map_params = {
+        "ll": coords,
+        "spn": ",".join([delta, delta]),
+        "l": "map",
+        "pt": "{0},org".format(org_point)
+    }
+
+    map_api_server = "http://static-maps.yandex.ru/1.x/"
+    response = requests.get(map_api_server, params=map_params)
+
+    map_file = f"static/img/maps/{id}.png"
+    with open(map_file, "wb") as file:
+        file.write(response.content)
+    return org_name, org_address
 
 
 @login_manager.user_loader
@@ -109,11 +153,13 @@ def profile(id):
         if request.method == "GET":
             form.name.data = user.name
             form.about.data = user.about
-            form.city.data = user.city
+            form.adress.data = user.adress
         if form.validate_on_submit():
             user.name = form.name.data
             user.about = form.about.data
-            user.city = form.city.data
+            if user.adress != form.adress.data:
+                user.org_name, user.org_adress = get_map(form.adress.data, id)
+            user.adress = form.adress.data
             db_sess.commit()
             return redirect(f'/profile/{id}')
         if request.method == 'POST':

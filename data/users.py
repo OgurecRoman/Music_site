@@ -17,7 +17,9 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     about = sqlalchemy.Column(sqlalchemy.String)
     photo = sqlalchemy.Column(sqlalchemy.String)
-    city = sqlalchemy.Column(sqlalchemy.String)
+    adress = sqlalchemy.Column(sqlalchemy.String)
+    org_name = sqlalchemy.Column(sqlalchemy.String)
+    org_adress = sqlalchemy.Column(sqlalchemy.String)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
 

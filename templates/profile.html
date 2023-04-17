@@ -45,20 +45,28 @@
         {% endfor %}
     </p>
         <p>
-        {{ form.city.label }}<br>
-        {{ form.city(class="form-control") }}<br>
-        {% for error in form.city.errors %}
+        {{ form.adress.label }}<br>
+        {{ form.adress(class="form-control") }}<br>
+        {% for error in form.adress.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
-    </p>
+        </p>
+    {% if user.adress %}
+        <div>
+            <img src="/static/img/maps/{{ user.id }}.png" alt="Карта" />
+            <h6>Название: {{ user.org_name }}</h6>
+            <h6>Адрес: {{ user.org_adress }}</h6>
+        </div>
+    {% endif %}
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}
     </form>
     <dev align="center"><a href="/logout" class="btn btn-primary">
             Выйти из аккаунта
     </a></dev>
+    <br><br><br><br>
 {% else %}
     {% if user.photo %}
         <div align="center"><img src="{{ user.photo }}" /></div>
