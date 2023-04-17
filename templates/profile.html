@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="/" class="btn btn-secondary">Вернуться на главную</a>
+{% if user == current_user %}
+<h1 align="center">Мой профиль</h1>
+<br>
+    {% if user.photo %}
+        <div align="center"><img src="{{ user.photo }}" alt="Фотография" /></div>
+        <br>
+        <form method="post" enctype="multipart/form-data">
+            <div align="center" class="form-group">
+                <label for="photo">Изменить фотографию</label>
+                <input type="file" class="form-control-file" id="photo" name="file">
+    {% else %}
+        <form method="post" enctype="multipart/form-data">
+            <div align="center" class="form-group">
+                <label for="photo">Выбрать фотографию</label>
+                <input type="file" class="form-control-file" id="photo" name="file">
+    {% endif %}
+            </div>
+            <br>
+            <div align="center"><button type="submit" class="btn btn-primary">Сохранить фото</button></div>
+        </form>
+
+    <br><br>
+    <form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.name.label }}<br>
+        {{ form.name(class="form-control") }}<br>
+        {% for error in form.name.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.about.label }}<br>
+        {{ form.about(class="form-control") }}<br>
+        {% for error in form.about.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+        <p>
+        {{ form.city.label }}<br>
+        {{ form.city(class="form-control") }}<br>
+        {% for error in form.city.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+    </form>
+    <dev align="center"><a href="/logout" class="btn btn-primary">
+            Выйти из аккаунта
+    </a></dev>
+{% else %}
+    {% if user.photo %}
+        <div align="center"><img src="{{ user.photo }}" /></div>
+    {% else %}
+        <div align="center">
+            У пользователя нет фотографии
+        </div>
+    {% endif %}
+    <br><br>
+    <h3 align="center">{{ user.name }}</h3>
+    <br>
+    {% if user.about %}
+        <h6 align="center">{{ user.about }}</h6>
+    {% else %}
+        <h6 align="center">Пользователь не добавил информацию о себе</h6>
+    {% endif %}
+{% endif %}
+{% endblock %}

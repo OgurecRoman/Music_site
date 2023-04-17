@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="/" class="btn btn-secondary">Вернуться на главную</a>
+<h1 align="center">{{ song.name }}</h1>
+<br><br>
+<div class="col-md6 border rounded">
+    <div>
+        {% for line in text %}
+            {{ line }}<br>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

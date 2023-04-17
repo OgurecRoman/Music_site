@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="/" class="btn btn-secondary">Перейти к трекам</a>
+{% if current_user.is_authenticated %}
+    <a href="add_bands" class="btn btn-secondary">Добавить исполнителя</a>
+{% endif %}
+<h1>Музыкальные группы</h1>
+{% for item in bands%}
+<div class="col-md6 border rounded">
+    <a href="/band/{{ item.id }}"><h2>{{item.name}}</h2></a>
+    <div>
+        <embed src="{{ item.biography }}" />
+    </div>
+    <div>
+        Автор - <a href="/profile/{{ item.user.id }}">{{item.user.name}}</a>
+    </div>
+    {% if current_user.is_authenticated and (current_user == item.user or current_user.id == 1) %}
+    <div>
+        <a href="/edit_bands/{{ item.id }}" class="btn btn-warning">
+            Изменить
+        </a>
+        <a href="/bands_delete/{{ item.id }}" class="btn btn-danger">
+            Удалить
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock %}
