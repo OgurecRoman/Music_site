@@ -191,13 +191,14 @@ def add_song():
         db_sess = db_session.create_session()
         song = Songs()
         song.name = form.name.data
-        band = db_sess.query(Bands).filter(Bands.name == form.band.data).first()
-        if band:
+        band = form.band.data
+        '''if band:
             song.band_id = band.id
         else:
             return render_template('songs.html',
                                    message="Такого исполнителя нет в каталоге",
-                                   form=form)
+                                   form=form)'''
+        song.band_id = band.id
         text = form.chords.data
         with open(f'static/chords/{band.name}-{form.name.data}.txt', 'w', encoding='utf-8') as f:
             f.writelines(text.split('\n'))
@@ -223,7 +224,8 @@ def edit_songs(id):
                                            (Songs.user == current_user) | (current_user.id == 1)).first()
         if song:
             form.name.data = song.name
-            form.band.data = song.band.name
+            form.band.data = song.band
+            print(form.band.data)
 
             if song.chords:
                 with open(song.chords, 'r', encoding='utf-8') as f:
@@ -240,13 +242,8 @@ def edit_songs(id):
                                            (Songs.user == current_user) | (current_user.id == 1)).first()
         if song:
             song.name = form.name.data
-            band = db_sess.query(Bands).filter(Bands.name == form.band.data).first()
-            if band:
-                song.band_id = band.id
-            else:
-                return render_template('songs.html',
-                                       message="Такого исполнителя нет в каталоге",
-                                       form=form)
+            band = form.band.data
+            song.band_id = band.id
             text = form.chords.data
             with open(f'static/chords/{band.name}-{form.name.data}.txt', 'w+', encoding='utf-8') as f:
                 f.writelines(text.split('\n'))
