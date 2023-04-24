@@ -192,12 +192,6 @@ def add_song():
         song = Songs()
         song.name = form.name.data
         band = form.band.data
-        '''if band:
-            song.band_id = band.id
-        else:
-            return render_template('songs.html',
-                                   message="Такого исполнителя нет в каталоге",
-                                   form=form)'''
         song.band_id = band.id
         text = form.chords.data
         with open(f'static/chords/{band.name}-{form.name.data}.txt', 'w', encoding='utf-8') as f:
