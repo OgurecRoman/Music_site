@@ -77,12 +77,20 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
-@app.route("/")
+@app.route("/", methods=['POST', 'GET'])
 def index():
     db_sess = db_session.create_session()
+    like = ''
+    if request.method == 'POST':
+        like = '%' + request.form['like'] + '%'
     if current_user.is_authenticated:
-        songs = db_sess.query(Songs).filter(
-            (Songs.user == current_user) | (Songs.is_private != True)).order_by(Songs.count_likes.desc())
+        if like:
+            songs = db_sess.query(Songs).filter(
+                ((Songs.user == current_user) | (Songs.is_private != True)) & (Songs.name.like(like))).order_by(
+                Songs.count_likes.desc())
+        else:
+            songs = db_sess.query(Songs).filter(
+                (Songs.user == current_user) | (Songs.is_private != True)).order_by(Songs.count_likes.desc())
         name = f'static/favorites/{current_user.id}.txt'
         if os.path.isfile(name):
             with open(name, 'r', encoding='utf-8') as f:
@@ -92,15 +100,25 @@ def index():
                 f.write('')
             nums = []
     else:
-        songs = db_sess.query(Songs).filter(Songs.is_private != True).order_by(Songs.count_likes.desc())
+        if like:
+            songs = db_sess.query(Songs).filter((Songs.is_private != True) & (Songs.name.like(like))).order_by(
+                Songs.count_likes.desc())
+        else:
+            songs = db_sess.query(Songs).filter(Songs.is_private != True).order_by(Songs.count_likes.desc())
         nums = []
     return render_template("index.html", songs=songs, nums=nums)
 
 
-@app.route("/bands")
+@app.route("/bands", methods=['GET', 'POST'])
 def bands():
     db_sess = db_session.create_session()
-    bands = db_sess.query(Bands).order_by(Bands.name)
+    like = ''
+    if request.method == 'POST':
+        like = '%' + request.form['like'] + '%'
+    if like:
+        bands = db_sess.query(Bands).filter(Bands.name.like(like)).order_by(Bands.name)
+    else:
+        bands = db_sess.query(Bands).order_by(Bands.name)
     return render_template("list_bands.html", bands=bands)
 
 

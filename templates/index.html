@@ -7,6 +7,11 @@
 {% endif %}
 <h1 align="center">Популярные композиции</h1>
 <br>
+<form action="" method="post">
+  <input name="like" placeholder="Искать здесь..." type="search">
+  <button type="submit">Поиск</button>
+</form>
+<br>
 {% for item in songs%}
 <div class="col-md6 border rounded">
     <a href="/song/{{ item.id }}"><h2>{{item.band.name}} -- {{item.name}}</h2></a>

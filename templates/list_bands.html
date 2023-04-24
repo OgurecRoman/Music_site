@@ -6,6 +6,11 @@
     <a href="add_bands" class="btn btn-secondary">Добавить исполнителя</a>
 {% endif %}
 <h1 align="center">Музыкальные группы</h1>
+<form action="" method="post">
+  <input name="like" placeholder="Искать здесь..." type="search">
+  <button type="submit">Поиск</button>
+</form>
+<br>
 {% for item in bands%}
 <div class="col-md6 border rounded">
     <a href="/band/{{ item.id }}"><h2>{{item.name}}</h2></a>
